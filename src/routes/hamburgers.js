@@ -3,6 +3,28 @@ module.exports = app => {
     const Hamburgers = app.db.models.Hamburger;
     const Ingredients = app.db.models.Ingredient;
 
+    function pathReturn(burger, ing){
+        var path = "PATH";
+        burger.Ingredients.forEach(q=>{
+            if (q.HamburgerIngredient.IngredientId == ing.id){
+                path = q.HamburgerIngredient.path
+                return;
+            }
+        })
+        return path;
+    }
+
+    function ingredientInBurger(burger, ing){
+        var con = false;
+        burger.Ingredients.forEach(q=>{
+            if (q.HamburgerIngredient.IngredientId == ing.id){
+                con = true;
+                return;
+            }
+        })
+        return con;
+    }
+
     app.route("/hamburguesa") //All Burgers and create a new one
         .get((req, res) => {
             Hamburgers.findAll({
@@ -85,12 +107,20 @@ module.exports = app => {
     app.route("/hamburguesa/:id1/ingrediente/:id2")
 
         .put(async(req, res) => {
-            const burger = await Hamburgers.findByPk(req.params.id1);
+            const burger = await Hamburgers.findByPk(req.params.id1, {include: [Ingredients]});
             const ing = await Ingredients.findByPk(req.params.id2);
+            const con = ingredientInBurger(burger, ing);
 
             if (burger && ing){ // Si existen ambos
-                res.status(201).json({msg: "Ingrediente Agregado"})
-                burger.addIngredient(ing, { through: { path: `https://hamburgueseria.com/ingrediente/${req.params.id2}` } });
+                if (con){
+                    res.status(409).json({msg: "Hamburguesa ya contiene este ingrediente"})
+                }
+                else {
+                    var _path = `https://hamburgueseria.com/ingrediente/${req.params.id2}`
+                    console.log("AGREGO: ", _path)
+                    res.status(201).json({msg: "Ingrediente Agregado"})
+                    burger.addIngredient(ing, { through: { path: _path } });
+                }
             }
             else if(!burger){
                 res.status(400).json({msg: "Hamburguesa invalida"})
@@ -101,13 +131,15 @@ module.exports = app => {
             };
         })
         .delete(async(req, res) => {
-            const burger = await Hamburgers.findByPk(req.params.id1);
+            const burger = await Hamburgers.findByPk(req.params.id1, {include: [Ingredients]});
             const ing = await Ingredients.findByPk(req.params.id2);
             const exi = await burger.hasIngredient(ing);
-
+            const ing_path = pathReturn(burger, ing);
+ 
             if (burger && ing && exi){ // Si existen ambos
-                burger.removeIngredient(ing)
+                console.log("Retiro: ", ing_path)
                 res.status(200).json({msg: "Ingrediente retirado"})
+                burger.removeIngredient(ing)
             }
             else if (burger && ing && !exi){
                 res.status(404).json({msg: "Ingrediente inexistente en la hamburguesa"})

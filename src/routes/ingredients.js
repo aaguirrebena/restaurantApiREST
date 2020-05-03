@@ -14,6 +14,7 @@ module.exports = app => {
                     if (q.HamburgerIngredient.IngredientId == req.params.id){
                         console.log("EXISTO EN ALGUNA HAMBURGUESA")
                         boo = true;
+                        return;
                     }
                 })
             }

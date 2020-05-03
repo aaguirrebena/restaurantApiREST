@@ -62,15 +62,6 @@ module.exports = app => {
                     }
                 });
         })
-
-        .patch((req, res) => {
-            Ingredients.update(req.body, {where: req.params})
-                .then(result => res.sendStatus(204))
-                .catch(error => {
-                    res.status(412).json({msg: error.message});
-                });
-        })
-
         .delete(async(req, res) => {
             var boo = await fun(req);
             if (!boo){

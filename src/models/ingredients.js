@@ -19,7 +19,6 @@ module.exports = (sequelize, DataType) => {
             validate: {
                 notEmpty: true
             }
-
         }
     });
 

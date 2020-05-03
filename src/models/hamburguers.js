@@ -7,7 +7,7 @@ module.exports = (sequelize, DataType) => {
     });
 
     const Hamburger = sequelize.define("Hamburger", {
-        id: {
+         id: {
             type: DataType.INTEGER,
             primaryKey: true,
             autoIncrement: true

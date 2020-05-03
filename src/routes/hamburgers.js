@@ -33,12 +33,7 @@ module.exports = app => {
         .get((req, res) => {
             Hamburgers.findAll({
                 attributes: ["id", "name", "price", "description", "image"],
-                include: {
-                    model: Ingredients,
-                    through: {
-                      attributes: ["path"]
-                    }
-                }
+                include: [Ingredients]
             })
             .then(result => res.json(result))
             .catch(error => {
@@ -92,7 +87,12 @@ module.exports = app => {
                     }
                 }
                 else{
-                    res.json(req.body)
+                    if(req.body.id){
+                        res.status(400).json({msg: "Id no se puede editar "})
+                    }
+                    else{
+                        res.json(req.body)
+                    };
                 }
             })
         })
@@ -117,11 +117,12 @@ module.exports = app => {
 
             if (burger && ing){ // Si existen ambos
                 if (con){
-                    res.status(409).json({msg: "Hamburguesa ya contiene este ingrediente"})
+                    res.status(200).json({msg: "Hamburguesa ya contiene este ingrediente"})
                 }
                 else {
                     var _path = `https://hamburgueseria.com/ingrediente/${req.params.id2}`
-                    console.log("AGREGO: ", _path)
+                    // console.log("AGREGO: ", _path)
+                    // console.log(burger.ingredients)
                     res.status(201).json({msg: "Ingrediente Agregado"})
                     burger.addIngredient(ing, { through: { path: _path } });
                 }
@@ -138,10 +139,10 @@ module.exports = app => {
             const burger = await Hamburgers.findByPk(req.params.id1, {include: [Ingredients]});
             const ing = await Ingredients.findByPk(req.params.id2);
             const exi = await burger.hasIngredient(ing);
-            const ing_path = pathReturn(burger, ing);
+            // const ing_path = pathReturn(burger, ing); //obtiene el path
  
             if (burger && ing && exi){ // Si existen ambos
-                console.log("Retiro: ", ing_path)
+                // console.log("Retiro: ", ing_path)
                 res.status(200).json({msg: "Ingrediente retirado"})
                 burger.removeIngredient(ing)
             }
@@ -149,7 +150,7 @@ module.exports = app => {
                 res.status(404).json({msg: "Ingrediente inexistente en la hamburguesa"})
             }
             else {
-                console.log("NO EXISTE")
+                // console.log("NO EXISTE")
                 res.status(400).json({msg: "id invalido"})
             };
         });

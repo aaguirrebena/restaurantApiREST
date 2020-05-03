@@ -120,7 +120,7 @@ module.exports = app => {
                     res.status(200).json({msg: "Hamburguesa ya contiene este ingrediente"})
                 }
                 else {
-                    var _path = `https://hamburgueseria.com/ingrediente/${req.params.id2}`
+                    var _path = `http://restaurantapirest.herokuapp.com/ingrediente/${req.params.id2}`
                     // console.log("AGREGO: ", _path)
                     // console.log(burger.ingredients)
                     res.status(201).json({msg: "Ingrediente Agregado"})

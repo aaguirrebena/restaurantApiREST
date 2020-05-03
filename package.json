@@ -10,7 +10,7 @@
     "start": "node dist/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Alfonso",
   "license": "ISC",
   "dependencies": {
     "consign": "^0.1.6",

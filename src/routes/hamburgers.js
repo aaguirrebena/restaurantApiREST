@@ -4,6 +4,8 @@ module.exports = app => {
     const Ingredients = app.db.models.Ingredient;
 
     function pathReturn(burger, ing){
+        //burger object wich contain that ing object
+        //return: path assocation to the ing in burger
         var path = "PATH";
         burger.Ingredients.forEach(q=>{
             if (q.HamburgerIngredient.IngredientId == ing.id){
@@ -15,6 +17,8 @@ module.exports = app => {
     }
 
     function ingredientInBurger(burger, ing){
+        //burger and ing models
+        //return false if burger doesn't contain ing, true if does
         var con = false;
         burger.Ingredients.forEach(q=>{
             if (q.HamburgerIngredient.IngredientId == ing.id){

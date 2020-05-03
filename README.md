@@ -25,7 +25,7 @@ Bienvenido a la Hamburgueseria
 
 Se puede iniciar de maner locar clonando repositrorio y ejecutando en la terminal y en orden:
 
-`npm i sqlite`
+`npm install`
 
 `npm run dev`
 

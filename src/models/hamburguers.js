@@ -12,28 +12,28 @@ module.exports = (sequelize, DataType) => {
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        nombre: {
             type: DataType.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
         },
-        price: {
+        precio: {
             type: DataType.INTEGER,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
         },
-        description: {
+        descripcion: {
             type: DataType.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
         },
-        image: {
+        imagen: {
             type: DataType.STRING,
             allowNull: false,
             validate: {

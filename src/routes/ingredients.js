@@ -27,7 +27,7 @@ module.exports = app => {
         .get((req, res) => {
 
             Ingredients.findAll({
-                attributes: ["id", "name", "description"]
+                attributes: ["id", "nombre", "descripcion"]
             })
             .then(result => res.json(result))
             .catch(error => {
@@ -47,7 +47,7 @@ module.exports = app => {
 
         .get((req, res) => {
             Ingredients.findByPk(req.params.id,
-                {attributes: ["id", "name", "description"]})
+                {attributes: ["id", "nombre", "descripcion"]})
                 .then(result => {
                     if (!result){
                         if(isNaN(req.params.id)){ //BadRequest

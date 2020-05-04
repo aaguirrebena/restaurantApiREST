@@ -32,8 +32,13 @@ module.exports = app => {
     app.route("/hamburguesa") //All Burgers and create a new one
         .get((req, res) => {
             Hamburgers.findAll({
-                attributes: ["id", "name", "price", "description", "image"],
-                include: [Ingredients]
+                attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
+                include: {
+                    model: Ingredients,
+                    through: {
+                      attributes: ["path"]
+                    }
+                }
             })
             .then(result => res.json(result))
             .catch(error => {
@@ -53,11 +58,11 @@ module.exports = app => {
 
         .get((req, res) => {
             Hamburgers.findByPk(req.params.id, {
-                attributes: ["id", "name", "price", "description", "image"],
+                attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
                 include: {
                     model: Ingredients,
                     through: {
-                      attributes: []
+                      attributes: ["path"]
                     }
                 }
               })
@@ -120,7 +125,7 @@ module.exports = app => {
                     res.status(200).json({msg: "Hamburguesa ya contiene este ingrediente"})
                 }
                 else {
-                    var _path = `http://restaurantapirest.herokuapp.com/ingrediente/${req.params.id2}`
+                    var _path = `https://restaurantapirest.herokuapp.com/ingrediente/${req.params.id2}`
                     // console.log("AGREGO: ", _path)
                     // console.log(burger.ingredients)
                     res.status(201).json({msg: "Ingrediente Agregado"})

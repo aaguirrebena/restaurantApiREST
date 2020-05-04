@@ -6,14 +6,14 @@ module.exports = (sequelize, DataType) => {
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        nombre: {
             type: DataType.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
         },
-        description: {
+        descripcion: {
             type: DataType.STRING,
             allowNull: false,
             validate: {

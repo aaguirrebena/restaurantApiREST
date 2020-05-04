@@ -4,7 +4,7 @@ module.exports = app => {
     const Ingredients = app.db.models.Ingredient;
 
     function pathReturn(burger, ing){
-        //burger object wich contain that ing object
+        //burger object wich contain ing object
         //return: path assocation to the ing in burger
         var path = "PATH";
         burger.Ingredients.forEach(q=>{
@@ -17,7 +17,8 @@ module.exports = app => {
     }
 
     function ingredientInBurger(burger, ing){
-        //burger and ing models
+        //burger: Hamburger model
+        //ing: Ingredient model
         //return false if burger doesn't contain ing, true if does
         var con = false;
         burger.Ingredients.forEach(q=>{
@@ -33,12 +34,13 @@ module.exports = app => {
         .get((req, res) => {
             Hamburgers.findAll({
                 attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
-                include: {
+                include: [{
                     model: Ingredients,
+                    attributes: ["id"],
                     through: {
                       attributes: ["path"]
                     }
-                }
+                }]
             })
             .then(result => res.json(result))
             .catch(error => {
@@ -48,7 +50,7 @@ module.exports = app => {
 
         .post((req, res) => {
             Hamburgers.create(req.body)
-                .then(result => res.status(201).json(result))
+                .then(result => console.log(result.toJSON(), result.Ingredients))
                 .catch(error => {
                     res.status(400).json({msg: error.message});
                 });
@@ -59,13 +61,14 @@ module.exports = app => {
         .get((req, res) => {
             Hamburgers.findByPk(req.params.id, {
                 attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
-                include: {
+                include: [{
                     model: Ingredients,
+                    attributes: ["id"],
                     through: {
                       attributes: ["path"]
                     }
-                }
-              })
+                }]
+            })
               .then(result => {
                 if (!result){
                     if(isNaN(req.params.id)){ //BadRequest
@@ -118,9 +121,9 @@ module.exports = app => {
         .put(async(req, res) => {
             const burger = await Hamburgers.findByPk(req.params.id1, {include: [Ingredients]});
             const ing = await Ingredients.findByPk(req.params.id2);
-            const con = ingredientInBurger(burger, ing);
 
             if (burger && ing){ // Si existen ambos
+                const con = ingredientInBurger(burger, ing);
                 if (con){
                     res.status(200).json({msg: "Hamburguesa ya contiene este ingrediente"})
                 }
@@ -145,7 +148,7 @@ module.exports = app => {
             const ing = await Ingredients.findByPk(req.params.id2);
             const exi = await burger.hasIngredient(ing);
             // const ing_path = pathReturn(burger, ing); //obtiene el path
- 
+
             if (burger && ing && exi){ // Si existen ambos
                 // console.log("Retiro: ", ing_path)
                 res.status(200).json({msg: "Ingrediente retirado"})

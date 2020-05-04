@@ -50,7 +50,7 @@ module.exports = app => {
 
         .post((req, res) => {
             Hamburgers.create(req.body)
-                .then(result => console.log(result.toJSON(), result.Ingredients))
+                .then(result => res.status(201).json(result))
                 .catch(error => {
                     res.status(400).json({msg: error.message});
                 });

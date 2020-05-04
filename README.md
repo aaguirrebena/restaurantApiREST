@@ -31,4 +31,4 @@ Se puede iniciar de maner locar clonando repositrorio y ejecutando en la termina
 
 O bien se puede ingresar a través del siguiente [link][blog].
 
-[blog]: https://mortyrickapp.herokuapp.com/
+[blog]: https://restaurantapirest.herokuapp.com/

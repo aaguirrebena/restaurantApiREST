@@ -17,12 +17,12 @@ module.exports = app => {
     }
 
     function pathsArray(burger){
-        //burger object wich contain ing object
-        //return: path assocation to the ing in burger
+        //burger object
+        //return: array with ingredients path associate
         var paths = [];
         burger.Ingredients.forEach(q=>{
             const ad = q.HamburgerIngredient.path
-            paths.push(ad);
+            paths.push({"path": ad});
             }
         )
         return paths;
@@ -43,6 +43,7 @@ module.exports = app => {
     }
 
     app.route("/hamburguesa") //All Burgers and create a new one
+
         .get(async(req, res) => {
             const bs = await Hamburgers.findAll({
                 attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
@@ -55,16 +56,30 @@ module.exports = app => {
                 }]
             })
 
-            .then(result => res.json(result))
-            .catch(error => {
-                res.status(412).json({msg: error.message});
-            });
+            .then(result => {
+                console.log(result[0].id)
+                res.json(result)
+            })
+            // .catch(error => {
+            //     res.status(412).json({msg: error.message});
+            // });
         })
 
-        .post((req, res) => {
+        .post(async (req, res) => {
             Hamburgers.create(req.body)
-                .then(result => res.status(201).json(result))
-                .catch(error => {
+            // console.log(b)
+            .then(result => {
+                const r = {
+                    "id": result.id,
+                    "nombre":req.body.nombre,
+                    "precio": req.body.precio,
+                    "descripcion": req.body.descripcion,
+                    "imagen": req.body.imagen,
+                    "ingredientes": []
+                }
+                res.status(201).json(r)
+                })
+            .catch(error => {
                     res.status(400).json({msg: error.message});
                 });
         });
@@ -82,7 +97,7 @@ module.exports = app => {
                     }
                 }]
             })
-              .then(async result => {
+            .then(async result => {
                 if (!result){
                     if(isNaN(req.params.id)){ //BadRequest
                         res.status(400).json({msg: "Hamburguesa Invalida"}) //: string
@@ -97,18 +112,18 @@ module.exports = app => {
                         model: Ingredients,
                         attributes: ["id"],
                         through: {
-                          attributes: ["path"]
+                        attributes: ["path"]
                         }
                     }]})
                     var pArray = pathsArray(b);
                     const r = {
-                           "id": b.id,
-                           "nombre":b.nombre,
-                           "precio": b.precio,
-                           "descripcion": b.descripcion,
-                           "imagen": b.imagen,
-                           "ingredientes": pArray
-                           }
+                        "id": b.id,
+                        "nombre":b.nombre,
+                        "precio": b.precio,
+                        "descripcion": b.descripcion,
+                        "imagen": b.imagen,
+                        "ingredientes": pArray
+                        }
                     res.json(r)
                 }
             });

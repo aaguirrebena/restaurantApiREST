@@ -16,6 +16,18 @@ module.exports = app => {
         return path;
     }
 
+    function pathsArray(burger){
+        //burger object wich contain ing object
+        //return: path assocation to the ing in burger
+        var paths = [];
+        burger.Ingredients.forEach(q=>{
+            const ad = q.HamburgerIngredient.path
+            paths.push(ad);
+            }
+        )
+        return paths;
+    }
+
     function ingredientInBurger(burger, ing){
         //burger: Hamburger model
         //ing: Ingredient model
@@ -31,8 +43,8 @@ module.exports = app => {
     }
 
     app.route("/hamburguesa") //All Burgers and create a new one
-        .get((req, res) => {
-            Hamburgers.findAll({
+        .get(async(req, res) => {
+            const bs = await Hamburgers.findAll({
                 attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
                 include: [{
                     model: Ingredients,
@@ -42,6 +54,7 @@ module.exports = app => {
                     }
                 }]
             })
+
             .then(result => res.json(result))
             .catch(error => {
                 res.status(412).json({msg: error.message});
@@ -69,7 +82,7 @@ module.exports = app => {
                     }
                 }]
             })
-              .then(result => {
+              .then(async result => {
                 if (!result){
                     if(isNaN(req.params.id)){ //BadRequest
                         res.status(400).json({msg: "Hamburguesa Invalida"}) //: string
@@ -79,30 +92,64 @@ module.exports = app => {
                     }
                 }
                 else{
-                    res.json(result)
+                    const b = await Hamburgers.findByPk(req.params.id, {attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
+                    include: [{
+                        model: Ingredients,
+                        attributes: ["id"],
+                        through: {
+                          attributes: ["path"]
+                        }
+                    }]})
+                    var pArray = pathsArray(b);
+                    const r = {
+                           "id": b.id,
+                           "nombre":b.nombre,
+                           "precio": b.precio,
+                           "descripcion": b.descripcion,
+                           "imagen": b.imagen,
+                           "ingredientes": pArray
+                           }
+                    res.json(r)
                 }
             });
         })
         .patch((req, res) => {
-            Hamburgers.update(req.body, {where: req.params})
-            .then(result => {
-                if (!result[0]){
-                    if(isNaN(req.params.id)){ //BadRequest
-                        res.status(400).json({msg: "Hamburguesa Invalida"}) //: string
-                    }
-                    else{ //NotFound
-                        res.status(404).json({msg: "Hamburguesa Inexistente"}) //: int
-                    }
-                }
-                else{
-                    if(req.body.id){
-                        res.status(400).json({msg: "Id no se puede editar "})
+            if(req.body.id){
+                res.status(400).json({msg: "Id no se puede editar "})
+            }
+            else{
+                Hamburgers.update(req.body, {where: req.params})
+                .then(async result => {
+                    if (!result[0]){
+                        if(isNaN(req.params.id)){ //BadRequest
+                            res.status(400).json({msg: "Hamburguesa Invalida"}) //: string
+                        }
+                        else{ //NotFound
+                            res.status(404).json({msg: "Hamburguesa Inexistente"}) //: int
+                        }
                     }
                     else{
-                        res.json(req.body)
-                    };
-                }
-            })
+                         const b = await Hamburgers.findByPk(req.params.id, {attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
+                         include: [{
+                             model: Ingredients,
+                             attributes: ["id"],
+                             through: {
+                               attributes: ["path"]
+                             }
+                         }]})
+                         var pArray = pathsArray(b);
+                         const r = {
+                                "id": b.id,
+                                "nombre":b.nombre,
+                                "precio": b.precio,
+                                "descripcion": b.descripcion,
+                                "imagen": b.imagen,
+                                "ingredientes": pArray
+                                }
+                         res.json(r)
+                    }
+                })
+            }
         })
         .delete((req, res) => {
             Hamburgers.destroy({where: req.params})

@@ -44,8 +44,8 @@ module.exports = app => {
 
     app.route("/hamburguesa") //All Burgers and create a new one
 
-        .get(async(req, res) => {
-            const bs = await Hamburgers.findAll({
+        .get((req, res) => {
+            Hamburgers.findAll({
                 attributes: ["id", "nombre", "precio", "descripcion", "imagen"],
                 include: [{
                     model: Ingredients,
@@ -55,14 +55,10 @@ module.exports = app => {
                     }
                 }]
             })
-
-            .then(result => {
-                console.log(result[0].id)
-                res.json(result)
-            })
-            // .catch(error => {
-            //     res.status(412).json({msg: error.message});
-            // });
+            .then(result => res.json(result))
+            .catch(error => {
+                res.status(412).json({msg: error.message});
+            });
         })
 
         .post(async (req, res) => {
